@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tandela Türkiye</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --forest:#1C3D2E;--green:#2E5E45;--sage:#3D7A5E;
+  --sage-l:#C5E0D4;--sage-ll:#EAF5EF;
+  --gold:#B08828;--bg:#F5F0E8;--bg2:#EDE7DC;
+  --ink:#1A1916;--stone:#54504A;--mist:#96908A;
+  --border:#D0C9BF;--white:#FEFDFB;--red:#B83030;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'Courier New',Courier,monospace;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);overflow-x:hidden;}
+
+/* ── INTRO ── */
+#intro{position:fixed;inset:0;z-index:999;background:var(--forest);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  transition:opacity .6s,visibility .6s;}
+#intro.gone{opacity:0;visibility:hidden;pointer-events:none;}
+.i-logo{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.i-bars{display:flex;align-items:flex-end;gap:3px;}
+.i-b{width:7px;border-radius:2px;background:#fff;}
+.i-b1{height:10px;}.i-b2{height:17px;}.i-b3{height:24px;}
+.i-name{font-size:2.6rem;font-weight:500;color:#fff;letter-spacing:-.02em;}
+.i-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;
+  color:rgba(255,255,255,.35);text-transform:uppercase;margin-bottom:2rem;}
+.i-stats{display:flex;align-items:center;gap:0;margin-bottom:2rem;}
+.i-stat{text-align:center;padding:0 1.8rem;}
+.i-num{display:flex;align-items:baseline;justify-content:center;gap:2px;}
+.i-n{font-size:3rem;font-weight:700;color:#fff;min-width:2ch;text-align:center;}
+.i-u{font-family:var(--mono);font-size:1rem;color:var(--gold);}
+.i-pre{font-family:var(--mono);font-size:1.2rem;color:rgba(255,255,255,.4);}
+.i-lbl{font-family:var(--mono);font-size:.5rem;color:rgba(255,255,255,.3);
+  letter-spacing:.12em;text-transform:uppercase;margin-top:6px;}
+.i-sep{width:1px;height:44px;background:rgba(255,255,255,.12);}
+#i-btn{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3);
+  border-radius:4px;padding:12px 40px;font-size:.9rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
+  transition:background .2s,border-color .2s,transform .15s;}
+#i-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.6);transform:translateY(-2px);}
+
+/* ── MODAL ── */
+#modal{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.45);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;}
+#modal.open{opacity:1;visibility:visible;}
+.m-box{background:var(--white);border-radius:12px;padding:28px 28px 24px;
+  width:min(400px,92vw);transform:translateY(16px);transition:transform .3s;}
+#modal.open .m-box{transform:none;}
+.m-close{position:absolute;top:14px;right:14px;width:28px;height:28px;
+  border-radius:50%;border:1px solid var(--border);background:none;cursor:pointer;
+  font-size:14px;color:var(--mist);line-height:28px;text-align:center;}
+.m-close:hover{background:var(--bg2);}
+.m-title{font-size:1.2rem;font-weight:600;color:var(--forest);margin-bottom:4px;}
+.m-sub{font-size:.82rem;color:var(--stone);margin-bottom:18px;}
+.m-card{display:flex;align-items:center;gap:14px;padding:14px 16px;
+  border:1px solid var(--border);border-radius:8px;text-decoration:none;
+  margin-bottom:8px;transition:background .2s,border-color .2s;}
+.m-card:last-child{margin-bottom:0;}
+.m-card:hover{background:var(--sage-ll);border-color:var(--sage-l);}
+.m-av{width:40px;height:40px;border-radius:50%;background:var(--forest);
+  color:var(--gold);font-family:var(--mono);font-size:.6rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-name{font-weight:600;color:var(--forest);font-size:.9rem;}
+.m-role{font-size:.72rem;color:var(--mist);margin-top:2px;}
+.m-email{font-family:var(--mono);font-size:.62rem;color:var(--sage);margin-top:4px;}
+.m-arr{color:var(--border);margin-left:auto;font-size:1rem;}
+.m-card:hover .m-arr{color:var(--sage);}
+
+/* ── FLOATING CONTACT ── */
+#float{position:fixed;bottom:18px;right:18px;z-index:200;
+  background:var(--forest);border-radius:6px;overflow:hidden;
+  box-shadow:0 6px 24px rgba(28,61,46,.3);}
+.f-lbl{font-family:var(--mono);font-size:.48rem;color:rgba(255,255,255,.3);
+  letter-spacing:.14em;text-transform:uppercase;padding:7px 14px 5px;}
+.f-row{display:flex;align-items:center;gap:10px;padding:8px 14px;
+  text-decoration:none;border-top:1px solid rgba(255,255,255,.07);
+  transition:background .2s;}
+.f-row:hover{background:rgba(255,255,255,.07);}
+.f-av{width:20px;height:20px;border-radius:50%;background:var(--green);
+  font-family:var(--mono);font-size:.42rem;color:var(--gold);font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.f-name{font-size:.7rem;font-weight:600;color:#fff;}
+.f-addr{font-family:var(--mono);font-size:.52rem;color:rgba(255,255,255,.3);}
+
+/* ── APP ── */
+#app{opacity:0;transition:opacity .6s;}
+#app.on{opacity:1;}
+
+/* ── HEADER ── */
+header{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 32px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;
+  background:rgba(245,240,232,.96);backdrop-filter:blur(12px);}
+.h-logo{display:flex;align-items:center;gap:8px;color:var(--forest);}
+.h-bars{display:flex;align-items:flex-end;gap:2.5px;}
+.h-b{width:4px;border-radius:2px;background:currentColor;}
+.h-b1{height:6px;}.h-b2{height:11px;}.h-b3{height:16px;}
+.h-name{font-size:1.2rem;font-weight:500;letter-spacing:-.015em;}
+.h-btn{background:var(--forest);color:#fff;border:none;border-radius:4px;
+  padding:8px 18px;font-size:.78rem;font-weight:600;cursor:pointer;
+  transition:background .2s;}
+.h-btn:hover{background:var(--green);}
+
+/* ── ANIMATION SECTION ── */
+.anim-sec{padding:32px 32px 0;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--sage-ll) 100%);
+  display:flex;flex-direction:column;align-items:center;}
+.anim-kicker{font-family:var(--mono);font-size:.54rem;color:var(--mist);
+  letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;}
+.anim-frame{width:100%;max-width:900px;padding:2px;border-radius:14px;
+  background:linear-gradient(135deg,#B8D4C8,#96B8A8 30%,#C8C4B0 65%,#B4C8BE);
+  box-shadow:0 10px 40px rgba(61,122,94,.14);}
+.anim-card{background:#F9F8F6;border-radius:12px;min-height:480px;
+  position:relative;overflow:hidden;}
+
+/* phases — all stacked */
+.ph{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;transition:opacity .5s;}
+.ph.off{opacity:0;pointer-events:none;}
+.ph.stretch{align-items:stretch;flex-direction:column;}
+
+/* Logo phase */
+.ph-logo{display:flex;align-items:center;gap:10px;}
+.ph-bars{display:flex;align-items:flex-end;gap:3.5px;}
+.ph-b{width:7px;border-radius:2.5px;background:#253028;}
+.ph-b1{height:10px;}.ph-b2{height:17px;}.ph-b3{height:24px;}
+.ph-name{font-size:1.7rem;font-weight:500;color:#253028;letter-spacing:-.015em;}
+
+/* Mic phase */
+.mic-wrap{position:relative;width:130px;height:130px;
+  display:flex;align-items:center;justify-content:center;}
+.mic-ring{position:absolute;border-radius:50%;border:1.5px solid rgba(61,122,94,.2);}
+.mic-ring1{width:76px;height:76px;animation:ring 3s ease-out infinite;}
+.mic-ring2{width:104px;height:104px;animation:ring 3s ease-out 1s infinite;}
+.mic-ring3{width:132px;height:132px;animation:ring 3s ease-out 2s infinite;}
+@keyframes ring{0%{transform:scale(.5);opacity:.9;}100%{transform:scale(1);opacity:0;}}
+.mic-btn{width:52px;height:52px;border-radius:50%;background:#2A3A2E;
+  display:flex;align-items:center;justify-content:center;z-index:2;}
+
+/* Interface phase */
+.iface{display:flex;flex-direction:column;height:100%;}
+.chrome{background:#F0EDE6;border-bottom:1px solid #E4E0D8;
+  padding:8px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.cdots{display:flex;gap:4px;}
+.cd{width:8px;height:8px;border-radius:50%;}
+.c-r{background:#FF5F56;}.c-y{background:#FFBD2E;}.c-g{background:#27C93F;}
+.curl{flex:1;background:#fff;border-radius:3px;padding:3px 10px;
+  font-family:var(--mono);font-size:.56rem;color:var(--stone);
+  border:1px solid #E4E0D8;white-space:nowrap;overflow:hidden;}
+.crec{display:flex;align-items:center;gap:5px;font-family:var(--mono);
+  font-size:.54rem;color:var(--mist);}
+.crec-dot{width:6px;height:6px;border-radius:50%;background:#E53E3E;}
+.crec-dot.done{background:#16A34A;animation:none!important;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.crec-dot:not(.done){animation:blink 1.2s infinite;}
+.tabs{display:flex;border-bottom:1px solid #EAE7E0;padding:8px 14px 0;flex-shrink:0;}
+.tab{font-family:var(--mono);font-size:.5rem;color:#B0AAA2;letter-spacing:.05em;
+  padding:0 10px 8px;border-bottom:2px solid transparent;cursor:default;
+  transition:color .3s,border-color .3s;white-space:nowrap;}
+.tab.on{color:#3D7A5E;border-bottom-color:#3D7A5E;}
+.body{flex:1;position:relative;min-height:360px;}
+.pane{position:absolute;inset:0;overflow-y:auto;transition:opacity .4s;}
+.pane.off{opacity:0;pointer-events:none;}
+.pane::-webkit-scrollbar{width:3px;}
+.pane::-webkit-scrollbar-thumb{background:#D0C9BF;}
+
+/* Processing */
+.proc{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;height:100%;gap:10px;}
+.proc-ring{width:34px;height:34px;border-radius:50%;
+  border:2px solid #C5E0D4;border-top-color:#3D7A5E;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.proc-lbl{font-family:var(--mono);font-size:.58rem;color:#3D7A5E;letter-spacing:.06em;}
+.proc-bar{width:160px;height:3px;background:#E2DAD0;border-radius:2px;overflow:hidden;}
+.proc-fill{height:100%;background:linear-gradient(90deg,#3D7A5E,#2E5E45);
+  border-radius:2px;width:0%;}
+
+/* Notes pane */
+.notes-wrap{padding:14px 18px 20px;}
+.nrow{display:flex;gap:16px;padding:10px 0;border-bottom:1px solid #F2EFE9;
+  opacity:0;transform:translateY(4px);transition:opacity .4s,transform .35s;}
+.nrow.vis{opacity:1;transform:none;}
+.nrow:last-child{border-bottom:none;}
+.nlbl{width:140px;flex-shrink:0;font-weight:600;font-size:.78rem;color:#2A3A30;}
+.nlbl.grey{color:#B0AAA2;font-weight:400;}
+.nval{flex:1;font-size:.78rem;color:#4A4842;line-height:1.5;}
+.nval.cur::after{content:'|';animation:cur .7s infinite;color:#3D7A5E;}
+@keyframes cur{0%,100%{opacity:1;}50%{opacity:0;}}
+.code-sec{border-top:1px solid #F2EFE9;padding-top:10px;margin-top:4px;
+  opacity:0;transition:opacity .4s;}
+.code-sec.vis{opacity:1;}
+.code-hdr{display:flex;gap:8px;padding:4px 0;align-items:baseline;}
+.code-hnum{font-family:var(--mono);font-size:.7rem;color:#C0BBB4;}
+.code-hdesc{font-weight:700;font-size:.76rem;color:#2A3A30;}
+.code-row{display:flex;align-items:center;gap:6px;padding:3px 0;
+  font-size:.72rem;color:#B0AAA2;opacity:0;transition:opacity .3s;}
+.code-row.vis{opacity:1;}
+.code-row.teal{color:#3D7A5E;}
+.ck{font-family:var(--mono);font-size:.7rem;}
+.cnum{font-family:var(--mono);font-size:.66rem;color:#C0BBB4;margin:0 4px;}
+.code-row.teal .cnum{color:#3D7A5E;}
+.appbtn{display:none;width:100%;margin-top:12px;background:var(--forest);
+  color:#fff;border:none;border-radius:4px;padding:10px;
+  font-size:.8rem;font-weight:600;cursor:default;}
+.appbtn.show{display:block;animation:fadeUp .4s both;}
+.appbtn.saved{background:#16A34A;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+/* Odontogram pane */
+.odo-wrap{padding:12px 16px 16px;display:flex;flex-direction:column;gap:8px;}
+.odo-lbl{font-family:var(--mono);font-size:.48rem;color:var(--mist);
+  letter-spacing:.1em;text-transform:uppercase;text-align:center;}
+.odo-arc{display:flex;justify-content:center;align-items:flex-end;gap:2px;padding:0 4px;}
+.odo-arc.lower{align-items:flex-start;}
+.tooth{display:flex;flex-direction:column;align-items:center;gap:2px;
+  opacity:0;transform:translateY(4px);transition:opacity .2s,transform .2s;}
+.tooth.lower{flex-direction:column-reverse;}
+.tooth.vis{opacity:1;transform:none;}
+.tooth-num{font-family:var(--mono);font-size:5px;color:#C0BBB4;line-height:1;}
+.odo-legend{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;}
+.odo-li{display:flex;align-items:center;gap:5px;font-size:.64rem;color:var(--stone);}
+.odo-dot{width:9px;height:9px;border-radius:2px;}
+.odo-findings{display:flex;flex-direction:column;border-top:1px solid #F0EDE6;padding-top:8px;}
+.odo-frow{display:flex;align-items:center;gap:8px;padding:4px 0;
+  border-bottom:1px solid #F7F5F2;font-size:.68rem;color:var(--stone);
+  opacity:0;transition:opacity .3s;}
+.odo-frow:last-child{border-bottom:none;}
+.odo-frow.vis{opacity:1;}
+.odo-fm{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.odo-fteeth{font-family:var(--mono);font-size:.6rem;color:var(--sage);margin-left:auto;}
+
+/* Treatment plan pane */
+.tp-wrap{padding:12px 16px 16px;display:flex;flex-direction:column;gap:8px;}
+.tp-patient{background:var(--sage-ll);border:1px solid var(--sage-l);
+  border-radius:4px;padding:10px 14px;}
+.tp-name{font-weight:700;font-size:.88rem;color:var(--forest);}
+.tp-meta{font-family:var(--mono);font-size:.5rem;color:var(--stone);margin-top:3px;}
+.tp-shdr{font-family:var(--mono);font-size:.48rem;color:var(--sage);
+  letter-spacing:.1em;text-transform:uppercase;padding-bottom:4px;
+  border-bottom:1px solid var(--sage-l);margin-bottom:6px;}
+.tp-row{display:flex;align-items:center;gap:8px;padding:5px 0;
+  border-bottom:1px solid #F0EDE6;font-size:.72rem;
+  opacity:0;transform:translateY(3px);transition:opacity .3s,transform .28s;}
+.tp-row:last-child{border-bottom:none;}
+.tp-row.vis{opacity:1;transform:none;}
+.tp-desc{flex:1;color:var(--ink);}
+.tp-tag{font-family:var(--mono);font-size:.52rem;color:var(--sage);
+  background:var(--sage-ll);padding:2px 6px;border-radius:2px;
+  border:1px solid var(--sage-l);white-space:nowrap;}
+.tp-price{font-family:var(--mono);font-size:.64rem;color:var(--forest);
+  font-weight:600;white-space:nowrap;}
+.tp-total{display:flex;justify-content:space-between;align-items:center;
+  background:var(--forest);color:#fff;padding:8px 12px;border-radius:3px;
+  margin-top:6px;opacity:0;transition:opacity .5s;}
+.tp-total.vis{opacity:1;}
+.tp-tlbl{font-family:var(--mono);font-size:.52rem;letter-spacing:.06em;text-transform:uppercase;}
+.tp-tval{font-family:var(--mono);font-size:.88rem;color:var(--gold);font-weight:700;}
+
+/* Done overlay */
+.done-bg{background:rgba(249,248,246,.92);}
+
+/* PMS export */
+.pms-exp{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:16px;width:100%;height:100%;padding:24px;}
+.pms-lbl{font-family:var(--mono);font-size:.52rem;color:var(--sage);
+  letter-spacing:.14em;text-transform:uppercase;}
+.pms-flow{display:flex;align-items:center;gap:12px;opacity:0;transition:opacity .5s;}
+.pms-flow.vis{opacity:1;}
+.pms-box{background:#F9F8F6;border:1.5px solid var(--sage-l);border-radius:6px;
+  padding:10px 14px;text-align:center;min-width:90px;}
+.pms-blbl{font-family:var(--mono);font-size:.46rem;color:#B0AAA2;
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.pms-bname{font-size:.8rem;font-weight:600;color:#2A3A2E;}
+.pms-arrow{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.pms-line{width:36px;height:2px;background:var(--sage-l);
+  border-radius:1px;overflow:hidden;position:relative;}
+.pms-pulse{position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,#3D7A5E,transparent);
+  animation:slide 1.3s ease-in-out infinite;}
+@keyframes slide{0%{left:-100%;}100%{left:100%;}}
+.pms-tip{font-size:.6rem;color:var(--sage);}
+.pms-tick{width:38px;height:38px;border-radius:50%;background:var(--sage-ll);
+  border:2px solid var(--sage);display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:scale(.5);transition:opacity .4s,transform .4s cubic-bezier(.2,1.4,.4,1);}
+.pms-tick.vis{opacity:1;transform:scale(1);}
+.pms-tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+  opacity:0;transition:opacity .5s;}
+.pms-tags.vis{opacity:1;}
+.ptag{font-family:var(--mono);font-size:.46rem;color:var(--mist);
+  background:#F0EDE6;border:1px solid #E4E0D8;padding:3px 8px;border-radius:3px;}
+.ptag.lit{color:var(--sage);background:var(--sage-ll);border-color:var(--sage-l);}
+.pms-sub{font-family:var(--mono);font-size:.48rem;color:#B0AAA2;
+  letter-spacing:.05em;text-align:center;max-width:260px;line-height:1.5;}
+
+/* ── HERO ── */
+.hero{padding:40px 32px;text-align:center;
+  background:linear-gradient(180deg,var(--sage-ll),var(--bg));
+  border-bottom:1px solid var(--sage-l);}
+.eyebrow{font-family:var(--mono);font-size:.6rem;color:var(--sage);
+  letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;}
+.hero h1{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.15;
+  color:var(--forest);margin-bottom:14px;}
+.hero h1 em{color:var(--sage);font-style:normal;}
+.hero p{font-size:.95rem;line-height:1.75;color:var(--stone);max-width:50ch;margin:0 auto;}
+
+/* ── FLOW ── */
+.flow{padding:40px 32px 32px;max-width:1100px;margin:0 auto;}
+.flow-title{font-family:var(--mono);font-size:.58rem;color:var(--sage);
+  letter-spacing:.16em;text-transform:uppercase;text-align:center;margin-bottom:32px;}
+.flow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;}
+.flow-conn{position:absolute;top:32px;left:12%;right:12%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--sage-l) 20%,var(--sage-l) 80%,transparent);}
+.fs{display:flex;flex-direction:column;align-items:center;text-align:center;
+  opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s;}
+.fs.vis{opacity:1;transform:none;}
+.fs-ico{width:52px;height:52px;border-radius:50%;background:var(--white);
+  border:1.5px solid var(--border);display:flex;align-items:center;
+  justify-content:center;margin-bottom:12px;z-index:1;}
+.fs-n{font-family:var(--mono);font-size:.52rem;color:var(--sage);
+  letter-spacing:.1em;margin-bottom:5px;}
+.fs h3{font-size:.82rem;font-weight:600;color:var(--forest);margin-bottom:4px;}
+.fs p{font-size:.72rem;color:var(--stone);line-height:1.5;}
+.wf{display:flex;align-items:center;gap:2px;height:18px;}
+.wb{width:2.5px;background:var(--sage);border-radius:2px;
+  animation:wave .8s ease-in-out infinite alternate;}
+.wb:nth-child(1){height:5px;}
+.wb:nth-child(2){height:11px;animation-delay:.1s;}
+.wb:nth-child(3){height:17px;animation-delay:.2s;}
+.wb:nth-child(4){height:8px;animation-delay:.3s;}
+.wb:nth-child(5){height:14px;animation-delay:.15s;}
+.wb:nth-child(6){height:6px;animation-delay:.25s;}
+.wb:nth-child(7){height:13px;animation-delay:.05s;}
+@keyframes wave{from{transform:scaleY(.3);}to{transform:scaleY(1);}}
+.ico{width:18px;height:18px;stroke:var(--sage);fill:none;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── FEATURES ── */
+.feats{background:var(--sage-ll);border-top:1px solid var(--sage-l);
+  border-bottom:1px solid var(--sage-l);padding:40px 32px;}
+.feat-grid{max-width:1100px;margin:0 auto;display:grid;
+  grid-template-columns:repeat(3,1fr);gap:20px;}
+.feat{padding:20px;background:var(--white);border:1px solid var(--border);
+  border-radius:6px;transition:transform .3s,box-shadow .3s,border-color .3s;}
+.feat:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(61,122,94,.08);
+  border-color:var(--sage-l);}
+.feat-ico{width:34px;height:34px;border-radius:7px;background:var(--sage-ll);
+  border:1px solid var(--sage-l);display:flex;align-items:center;
+  justify-content:center;margin-bottom:10px;}
+.feat-ico svg{width:16px;height:16px;stroke:var(--sage);fill:none;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round;}
+.feat h3{font-size:.85rem;font-weight:600;color:var(--forest);margin-bottom:5px;}
+.feat p{font-size:.75rem;color:var(--stone);line-height:1.6;}
+
+/* PMS mock */
+.pms-mock{margin:10px 0 8px;border:1px solid var(--border);
+  border-radius:5px;overflow:hidden;background:var(--white);}
+.pms-tbar{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);}
+.pms-t{font-family:var(--mono);font-size:.5rem;color:var(--stone);
+  padding:5px 10px;border-right:1px solid var(--border);cursor:default;
+  transition:background .3s,color .3s;}
+.pms-t.act{background:var(--white);color:var(--forest);}
+.pms-t.ton{background:var(--white);color:var(--sage);}
+.pms-body{position:relative;height:70px;}
+.pms-scr{position:absolute;inset:0;padding:8px 12px;transition:opacity .5s;}
+.pms-scr.off{opacity:0;pointer-events:none;}
+.pms-ln{font-family:var(--mono);font-size:.5rem;color:var(--mist);
+  padding:2.5px 0;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;}
+.pms-ln:last-child{border-bottom:none;}
+.pms-ln b{color:var(--ink);font-weight:normal;}
+.tnl{display:flex;gap:6px;margin-bottom:4px;opacity:0;
+  transform:translateX(-4px);transition:opacity .35s,transform .3s;}
+.tnl.vis{opacity:1;transform:none;}
+.tnl-l{font-family:var(--mono);font-size:.44rem;color:var(--mist);
+  text-transform:uppercase;letter-spacing:.06em;width:40px;flex-shrink:0;padding-top:2px;}
+.tnl-v{font-size:.6rem;color:var(--ink);border-left:1.5px solid var(--sage-l);
+  padding-left:5px;line-height:1.35;}
+.pms-cap{font-family:var(--mono);font-size:.48rem;color:var(--mist);
+  letter-spacing:.05em;text-align:center;margin-top:4px;}
+
+/* ── CONTACT ── */
+.cta{padding:56px 32px;background:var(--forest);text-align:center;}
+.cta h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;color:#fff;margin-bottom:8px;}
+.cta h2 span{color:var(--gold);}
+.cta p{color:rgba(255,255,255,.4);font-size:.88rem;margin-bottom:28px;}
+.cbox{display:inline-flex;flex-direction:column;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:6px;overflow:hidden;min-width:280px;}
+.crow{display:flex;align-items:center;gap:14px;padding:14px 20px;
+  border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;
+  transition:background .2s;}
+.crow:last-child{border-bottom:none;}
+.crow:hover{background:rgba(255,255,255,.08);}
+.cav{width:32px;height:32px;border-radius:50%;background:var(--green);
+  font-family:var(--mono);font-size:.6rem;color:var(--gold);font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cname{font-size:.88rem;font-weight:600;color:#fff;}
+.crole{font-size:.7rem;color:rgba(255,255,255,.35);margin-top:2px;}
+.cemail{font-family:var(--mono);font-size:.62rem;color:rgba(255,255,255,.35);margin-top:3px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px){
+  .flow-grid{grid-template-columns:repeat(2,1fr);}
+  .flow-conn{display:none;}
+  .feat-grid{grid-template-columns:1fr;}
+  .anim-sec,.hero,.flow,.feats,.cta{padding-left:16px;padding-right:16px;}
+  header{padding:12px 16px;}
+}
+@media(max-width:520px){
+  .i-stats{flex-direction:column;gap:12px;}
+  .i-sep{width:48px;height:1px;}
+  .i-n{font-size:2.4rem;}
+  .nrow{flex-direction:column;gap:4px;}
+  .nlbl{width:100%;}
+  .tabs{overflow-x:auto;}
+  .tabs::-webkit-scrollbar{display:none;}
+  #float{bottom:10px;right:10px;}
+  .cbox{min-width:0;width:100%;max-width:320px;}
+}
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div id="modal">
+  <div class="m-box" style="position:relative;">
+    <button class="m-close" onclick="document.getElementById('modal').classList.remove('open');document.body.style.overflow=''">✕</button>
+    <div class="m-title">Tandela Türkiye</div>
+    <div class="m-sub">Demo almak veya bilgi sormak için aşağıdaki kişilerden birine yazın.</div>
+    <a class="m-card" href="mailto:kaan@tandela.ai">
+      <div class="m-av">KA</div>
+      <div><div class="m-name">Kaan</div><div class="m-role">Kurucu Ortak</div><div class="m-email">kaan@tandela.ai</div></div>
+      <span class="m-arr">›</span>
+    </a>
+    <a class="m-card" href="mailto:berker@tandela.ai">
+      <div class="m-av">BE</div>
+      <div><div class="m-name">Berker</div><div class="m-role">Kurucu Ortak · Türkiye</div><div class="m-email">berker@tandela.ai</div></div>
+      <span class="m-arr">›</span>
+    </a>
+  </div>
+</div>
+
+<!-- FLOATING -->
+<div id="float">
+  <div class="f-lbl">Demo için yazın</div>
+  <a class="f-row" href="mailto:kaan@tandela.ai">
+    <div class="f-av">KA</div>
+    <div><div class="f-name">Kaan</div><div class="f-addr">kaan@tandela.ai</div></div>
+  </a>
+  <a class="f-row" href="mailto:berker@tandela.ai">
+    <div class="f-av">BE</div>
+    <div><div class="f-name">Berker</div><div class="f-addr">berker@tandela.ai</div></div>
+  </a>
+</div>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="i-logo">
+    <div class="i-bars"><div class="i-b i-b1"></div><div class="i-b i-b2"></div><div class="i-b i-b3"></div></div>
+    <span class="i-name">tandela</span>
+  </div>
+  <div class="i-tag">Türkiye · Yapay Zeka Destekli Klinik Dokümantasyon</div>
+  <div class="i-stats">
+    <div class="i-stat">
+      <div class="i-num"><span class="i-n" id="n1">0</span><span class="i-u">dk</span></div>
+      <div class="i-lbl">seans başına tasarruf</div>
+    </div>
+    <div class="i-sep"></div>
+    <div class="i-stat">
+      <div class="i-num"><span class="i-pre">%</span><span class="i-n" id="n2">0</span></div>
+      <div class="i-lbl">belgeleme doğruluğu</div>
+    </div>
+    <div class="i-sep"></div>
+    <div class="i-stat">
+      <div class="i-num"><span class="i-n" id="n3">0</span><span class="i-u">×</span></div>
+      <div class="i-lbl">daha hızlı not oluşturma</div>
+    </div>
+  </div>
+  <button id="i-btn" onclick="startDemo()">Başla →</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<header>
+  <div class="h-logo">
+    <div class="h-bars"><div class="h-b h-b1"></div><div class="h-b h-b2"></div><div class="h-b h-b3"></div></div>
+    <span class="h-name">tandela</span>
+  </div>
+  <button class="h-btn" onclick="document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'">Bize Ulaşın</button>
+</header>
+
+<!-- ANIMATION -->
+<section class="anim-sec">
+  <div class="anim-kicker">Gerçek Bir Seans — Canlı Gösterim</div>
+  <div class="anim-frame">
+    <div class="anim-card" id="anim-card">
+
+      <!-- Ph1: Logo -->
+      <div class="ph" id="ph1">
+        <div class="ph-logo">
+          <div class="ph-bars"><div class="ph-b ph-b1"></div><div class="ph-b ph-b2"></div><div class="ph-b ph-b3"></div></div>
+          <span class="ph-name">tandela</span>
+        </div>
+      </div>
+
+      <!-- Ph2: Mic -->
+      <div class="ph off" id="ph2">
+        <div class="mic-wrap">
+          <div class="mic-ring mic-ring1"></div>
+          <div class="mic-ring mic-ring2"></div>
+          <div class="mic-ring mic-ring3"></div>
+          <div class="mic-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#96B89A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ph3: Interface -->
+      <div class="ph stretch off" id="ph3">
+        <div class="iface">
+          <div class="chrome">
+            <div class="cdots"><div class="cd c-r"></div><div class="cd c-y"></div><div class="cd c-g"></div></div>
+            <div class="curl">app.tandela.ai · Dr. Zeynep Kaya · Seans #3614 — Burak Altan</div>
+            <div class="crec"><div class="crec-dot" id="cdot"></div><span id="clbl">Kayıt Aktif</span></div>
+          </div>
+          <div class="tabs">
+            <div class="tab on" id="tt-notlar">Notlar</div>
+            <div class="tab" id="tt-odo">Odontogram</div>
+            <div class="tab" id="tt-tp">Tedavi Planı</div>
+          </div>
+          <div class="body">
+            <!-- Processing -->
+            <div class="pane off" id="pane-proc">
+              <div class="proc">
+                <div class="proc-ring"></div>
+                <div class="proc-lbl">Yapay zeka analiz ediyor...</div>
+                <div class="proc-bar"><div class="proc-fill" id="proc-fill"></div></div>
+              </div>
+            </div>
+            <!-- Notes -->
+            <div class="pane off" id="pane-notes">
+              <div class="notes-wrap">
+                <div class="nrow" id="nr1"><div class="nlbl">Hasta</div><div class="nval" id="nv1"></div></div>
+                <div class="nrow" id="nr2"><div class="nlbl">Şikayet</div><div class="nval" id="nv2"></div></div>
+                <div class="nrow" id="nr3"><div class="nlbl">Anamnez</div><div class="nval" id="nv3"></div></div>
+                <div class="nrow" id="nr4"><div class="nlbl">Klinik Bulgular</div><div class="nval" id="nv4"></div></div>
+                <div class="nrow" id="nr5"><div class="nlbl">Röntgen</div><div class="nval" id="nv5"></div></div>
+                <div class="nrow" id="nr6"><div class="nlbl">Uygulanan Tedavi</div><div class="nval" id="nv6"></div></div>
+                <div class="nrow" id="nr7"><div class="nlbl grey">Klinik Gerekçe</div><div class="nval" id="nv7"></div></div>
+                <div class="code-sec" id="code-sec">
+                  <div class="code-hdr"><span class="code-hnum">3001</span><span class="code-hdesc">Karies ile pulpa komplikasyonu riski</span></div>
+                  <div class="code-row" id="cr1"><span class="ck">✓</span><span class="cnum">301</span><span>Hastalık tedavisi</span></div>
+                  <div class="code-row" id="cr2"><span class="ck">✓</span><span class="cnum">341</span><span>Kanal tedavisi</span></div>
+                  <div class="code-row teal" id="cr3"><span class="ck">✓</span><span class="cnum">A.1</span><span>Dokümantasyon</span></div>
+                  <div class="code-row teal" id="cr4"><span class="ck">✓</span><span class="cnum">C.0</span><span>Klinik Gerekçe</span></div>
+                  <div class="code-row teal" id="cr5"><span class="ck">✓</span><span class="cnum">C.1</span><span>Kanal Tedavisi İstisnası</span></div>
+                </div>
+                <button class="appbtn" id="appbtn">✓ Notu Onayla ve Kaydet</button>
+              </div>
+            </div>
+            <!-- Odontogram -->
+            <div class="pane off" id="pane-odo">
+              <div class="odo-wrap">
+                <div class="odo-lbl">Üst Çene (Maxilla)</div>
+                <div class="odo-arc" id="upper-arc"></div>
+                <div style="height:6px;"></div>
+                <div class="odo-arc lower" id="lower-arc"></div>
+                <div class="odo-lbl">Alt Çene (Mandibula)</div>
+                <div class="odo-legend">
+                  <div class="odo-li"><div class="odo-dot" style="background:#C8E8D8;border:1.5px solid #3D7A5E;"></div>Sağlam</div>
+                  <div class="odo-li"><div class="odo-dot" style="background:#F8C8C8;border:1.5px solid #B83030;"></div>Çürük</div>
+                  <div class="odo-li"><div class="odo-dot" style="background:#EDD8A0;border:1.5px solid #B08828;"></div>Dolgulu</div>
+                  <div class="odo-li"><div class="odo-dot" style="background:#E0DBD4;border:1.5px solid #96908A;"></div>Eksik</div>
+                  <div class="odo-li"><div class="odo-dot" style="background:#D8C8F8;border:1.5px solid #5A3A9A;"></div>Kron</div>
+                  <div class="odo-li"><div class="odo-dot" style="background:#B8D8F4;border:1.5px solid #1E5C9E;"></div>Gömülü</div>
+                </div>
+                <div class="odo-findings">
+                  <div class="odo-frow" id="of1"><div class="odo-fm" style="background:#F8C8C8;border:1px solid #B83030;"></div>Aktif çürük — semptomatik<span class="odo-fteeth">36</span></div>
+                  <div class="odo-frow" id="of2"><div class="odo-fm" style="background:#EDD8A0;border:1px solid #B08828;"></div>Mevcut dolgu<span class="odo-fteeth">17, 25, 35, 46</span></div>
+                  <div class="odo-frow" id="of3"><div class="odo-fm" style="background:#D8C8F8;border:1px solid #5A3A9A;"></div>Kron<span class="odo-fteeth">16</span></div>
+                  <div class="odo-frow" id="of4"><div class="odo-fm" style="background:#E0DBD4;border:1px solid #96908A;"></div>Eksik diş<span class="odo-fteeth">27</span></div>
+                  <div class="odo-frow" id="of5"><div class="odo-fm" style="background:#B8D8F4;border:1px solid #1E5C9E;"></div>Gömülü<span class="odo-fteeth">28, 48</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- Treatment plan -->
+            <div class="pane off" id="pane-tp">
+              <div class="tp-wrap">
+                <div class="tp-patient"><div class="tp-name">Burak Altan</div><div class="tp-meta">D.T.: 1988 · E · 27.04.2026 · Dr. Zeynep Kaya</div></div>
+                <div><div class="tp-shdr">Bugünkü Acil Tedavi</div>
+                  <div class="tp-row" id="tr1"><span class="tp-desc">Muayene ve teşhis</span><span class="tp-tag">36</span><span class="tp-price">1.100 ₺</span></div>
+                  <div class="tp-row" id="tr2"><span class="tp-desc">Acil pulpotomi + geçici dolgu</span><span class="tp-tag">36</span><span class="tp-price">2.200 ₺</span></div>
+                  <div class="tp-row" id="tr3"><span class="tp-desc">Periapikal röntgen</span><span class="tp-tag">36</span><span class="tp-price">365 ₺</span></div>
+                </div>
+                <div><div class="tp-shdr">Planlanan Tedaviler</div>
+                  <div class="tp-row" id="tr4"><span class="tp-desc">Kanal tedavisi tamamlanması (3 kanal)</span><span class="tp-tag">36</span><span class="tp-price">3.385 ₺</span></div>
+                  <div class="tp-row" id="tr5"><span class="tp-desc">Post-core + tam kron</span><span class="tp-tag">36</span><span class="tp-price">5.200 ₺</span></div>
+                  <div class="tp-row" id="tr6"><span class="tp-desc">Supragingival tartar temizliği</span><span class="tp-tag">Tüm ağız</span><span class="tp-price">950 ₺</span></div>
+                  <div class="tp-row" id="tr7"><span class="tp-desc">İmplant değerlendirmesi</span><span class="tp-tag">27</span><span class="tp-price">—</span></div>
+                </div>
+                <div class="tp-total" id="tp-total">
+                  <span class="tp-tlbl">Tahmini Toplam</span>
+                  <span class="tp-tval">13.200 ₺</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ph4: Done logo -->
+      <div class="ph done-bg off" id="ph4">
+        <div class="ph-logo">
+          <div class="ph-bars"><div class="ph-b ph-b1"></div><div class="ph-b ph-b2"></div><div class="ph-b ph-b3"></div></div>
+          <span class="ph-name">tandela</span>
+        </div>
+      </div>
+
+      <!-- Ph5: PMS Export -->
+      <div class="ph done-bg off" id="ph5">
+        <div class="pms-exp">
+          <div class="pms-lbl">Mevcut Sisteme Aktarılıyor</div>
+          <div class="pms-flow" id="pms-flow">
+            <div class="pms-box"><div class="pms-blbl">Tandela</div><div class="pms-bname">Not hazır ✓</div></div>
+            <div class="pms-arrow"><div class="pms-line"><div class="pms-pulse"></div></div><div class="pms-tip">→</div></div>
+            <div class="pms-box"><div class="pms-blbl">Hasta Dosyası</div><div class="pms-bname" id="pms-tname">Güncelleniyor...</div></div>
+          </div>
+          <div class="pms-tick" id="pms-tick">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#3D7A5E" stroke-width="2.5"><path d="M20 6L9 17l-5-5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="pms-tags" id="pms-tags">
+            <span class="ptag lit">DentSoft</span><span class="ptag lit">DentalBulut</span>
+            <span class="ptag">Medicasimple</span><span class="ptag">NovaSoft</span><span class="ptag">Macrodental</span>
+          </div>
+          <div class="pms-sub">Not, tedavi planı ve odontogram mevcut klinik yazılımınıza aktarıldı</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="eyebrow">Yapay Zeka Destekli Klinik Dokümantasyon</div>
+  <h1>Siz hastanıza odaklanın,<br><em>notları biz yazalım.</em></h1>
+  <p>Tandela muayene sırasında arka planda sessizce dinler, konuşmayı analiz eder ve eksiksiz klinik dokümantasyon oluşturur. Siz sadece gözden geçirip onaylarsınız.</p>
+</section>
+
+<!-- FLOW -->
+<div class="flow">
+  <div class="flow-title">Nasıl Çalışır?</div>
+  <div class="flow-grid">
+    <div class="flow-conn"></div>
+    <div class="fs" id="fs1"><div class="fs-ico"><div class="wf"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div></div><div class="fs-n">01</div><h3>Mikrofon Dinliyor</h3><p>Masaya yerleştirilen mikrofon muayene konuşmasını sessizce kaydeder.</p></div>
+    <div class="fs" id="fs2"><div class="fs-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><div class="fs-n">02</div><h3>Yapay Zeka Analiz Ediyor</h3><p>Tanı, tedavi bilgileri ve kodlar otomatik çıkarılır.</p></div>
+    <div class="fs" id="fs3"><div class="fs-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="fs-n">03</div><h3>Dökümanlar Hazır</h3><p>Günlük not, tedavi planı ve odontogram saniyeler içinde oluşur.</p></div>
+    <div class="fs" id="fs4"><div class="fs-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div><div class="fs-n">04</div><h3>Hekim Onaylıyor</h3><p>Gözden geçirir, gerekirse düzenler ve tek tıkla kaydeder.</p></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="feats">
+  <div class="feat-grid">
+    <div class="feat"><div class="feat-ico"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3>KVKK Uyumlu</h3><p>Ses kaydı transkripsiyon tamamlandıktan sonra silinir. Tüm veriler uçtan uca şifrelenir. Hasta verileri üçüncü taraflarla paylaşılmaz.</p></div>
+    <div class="feat"><div class="feat-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><h3>Tüm Diller</h3><p>Türkçe, İngilizce, Arapça ve daha fazlası. Uluslararası hasta gören kliniklerde notlar istenilen dilde üretilir.</p></div>
+    <div class="feat"><div class="feat-ico"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+      <h3>Mevcut Yazılımla Çalışır</h3>
+      <div class="pms-mock">
+        <div class="pms-tbar"><div class="pms-t act" id="pt1">DisPro Klinik</div><div class="pms-t" id="pt2">Tandela</div></div>
+        <div class="pms-body">
+          <div class="pms-scr" id="ps1"><div class="pms-ln"><span>Hasta</span><b>Burak Altan</b></div><div class="pms-ln"><span>Randevu</span><b>27.04.2026 · 14:30</b></div><div class="pms-ln"><span>Durum</span><b>Seans devam ediyor</b></div></div>
+          <div class="pms-scr off" id="ps2"><div class="tnl" id="tl1"><span class="tnl-l">Tanı</span><span class="tnl-v">K04.0 — Pulpitis · Diş 36</span></div><div class="tnl" id="tl2"><span class="tnl-l">Tedavi</span><span class="tnl-v">Acil pulpotomi + geçici dolgu</span></div><div class="tnl" id="tl3"><span class="tnl-l">Reçete</span><span class="tnl-v">Klindamisin 300mg · 7 gün</span></div></div>
+        </div>
+      </div>
+      <div class="pms-cap" id="pms-cap">DisPro'ya dokunmaz — Tandela ayrı sekmede çalışır</div>
+      <p style="margin-top:8px;">Yeni bir program öğrenmeye gerek yok. Mevcut klinik yazılımınızın yanında, tarayıcı üzerinden çalışır.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="cta">
+  <h2>Demo için bir <span>zaman ayarlayalım.</span></h2>
+  <p>Kliniğinizde veya video görüşme üzerinden gerçek bir vaka üzerinde birlikte görebiliriz.</p>
+  <div class="cbox">
+    <a class="crow" href="mailto:kaan@tandela.ai"><div class="cav">KA</div><div><div class="cname">Kaan</div><div class="crole">Kurucu Ortak</div><div class="cemail">kaan@tandela.ai</div></div></a>
+    <a class="crow" href="mailto:berker@tandela.ai"><div class="cav">BE</div><div><div class="cname">Berker</div><div class="crole">Kurucu Ortak · Türkiye</div><div class="cemail">berker@tandela.ai</div></div></a>
+  </div>
+</section>
+
+</div><!-- /app -->
+
+<script>
+// ── HELPERS ───────────────────────────────────────────
+var T = function(ms,fn){ return setTimeout(fn,ms); };
+var S = function(id){ var e=document.getElementById(id); if(e)e.classList.remove('off'); };
+var H = function(id){ var e=document.getElementById(id); if(e)e.classList.add('off'); };
+var Q = function(id){ return document.getElementById(id); };
+
+// ── INTRO COUNTERS ────────────────────────────────────
+function count(id, target, ms){
+  var el=Q(id); if(!el)return;
+  var start=null;
+  function step(ts){
+    if(!start)start=ts;
+    var p=Math.min((ts-start)/ms,1);
+    el.textContent=Math.round(p*target);
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+count('n1',8,800);
+count('n2',98,1000);
+count('n3',10,700);
+
+// ── START DEMO ────────────────────────────────────────
+function startDemo(){
+  Q('intro').classList.add('gone');
+  Q('app').classList.add('on');
+  runAnim();
+  T(1000,runPms);
+  T(500,function(){
+    var io=new IntersectionObserver(function(ents){
+      ents.forEach(function(e){ if(e.isIntersecting){ animFlow(); io.disconnect(); }});
+    },{threshold:.2});
+    var fl=document.querySelector('.flow');
+    if(fl)io.observe(fl);
+  });
+}
+
+// ── ANIMATION DATA ────────────────────────────────────
+var NOTES=[
+  {row:'nr1',val:'nv1',t:'Burak Altan · 38 y · E · 27.04.2026 · Dr. Zeynep Kaya'},
+  {row:'nr2',val:'nv2',t:'Sol alt bölgede zonklayan ağrı, dün geceden beri. Soğuğa uzun süreli hassasiyet. Gece ağrısı.'},
+  {row:'nr3',val:'nv3',t:'Hipertansiyon — Amlodipine 5 mg/gün. Penisilin alerjisi (belgelenmiş).'},
+  {row:'nr4',val:'nv4',t:'Diş 36: derin oklüzal-mesial çürük. Soğuk (+) uzun süreli. Perküsyon hafif (+).'},
+  {row:'nr5',val:'nv5',t:'Periapikal röntgen: diş 36 derin çürük, apikal lezyon başlangıcı.'},
+  {row:'nr6',val:'nv6',t:'Diş 36 — acil kısmi pulpotomi + geçici dolgu (402.010).'},
+  {row:'nr7',val:'nv7',t:'Semptomatik irreversible pulpitis. Kanal tedavisi endikasyonu kesin.'},
+];
+var CODES=['cr1','cr2','cr3','cr4','cr5'];
+var TPROWS=['tr1','tr2','tr3','tr4','tr5','tr6','tr7'];
+var UPPER=[{n:'18',s:'h'},{n:'17',s:'f'},{n:'16',s:'k'},{n:'15',s:'h'},{n:'14',s:'h'},{n:'13',s:'h'},{n:'12',s:'h'},{n:'11',s:'h'},{n:'21',s:'h'},{n:'22',s:'h'},{n:'23',s:'h'},{n:'24',s:'h'},{n:'25',s:'f'},{n:'26',s:'h'},{n:'27',s:'m'},{n:'28',s:'g'}];
+var LOWER=[{n:'48',s:'g'},{n:'47',s:'h'},{n:'46',s:'f'},{n:'45',s:'h'},{n:'44',s:'h'},{n:'43',s:'h'},{n:'42',s:'h'},{n:'41',s:'h'},{n:'31',s:'h'},{n:'32',s:'h'},{n:'33',s:'h'},{n:'34',s:'h'},{n:'35',s:'f'},{n:'36',s:'c'},{n:'37',s:'h'},{n:'38',s:'h'}];
+var SC={h:{c:'#C8E8D8',s:'#3D7A5E',r:'#B4D8C8'},f:{c:'#EDD8A0',s:'#B08828',r:'#E0CC90'},k:{c:'#D8C8F8',s:'#5A3A9A',r:'#C8B8F0'},m:{c:'none',s:'#96908A',r:'none'},g:{c:'#B8D8F4',s:'#1E5C9E',r:'#A8C8EC'},c:{c:'#F8C8C8',s:'#B83030',r:'#F0A0A0'}};
+
+// ── TAB ───────────────────────────────────────────────
+function setTab(id){
+  ['tt-notlar','tt-odo','tt-tp'].forEach(function(t){
+    var e=Q(t); if(e)e.classList.toggle('on',t===id);
+  });
+}
+
+// ── SCROLL ───────────────────────────────────────────
+function scrollIt(id){var e=Q(id);if(e)e.scrollTop=e.scrollHeight;}
+
+// ── TYPE ──────────────────────────────────────────────
+function typeIn(elId, text, cb){
+  var el=Q(elId); if(!el){T(50,cb);return;}
+  el.classList.add('cur'); var i=0;
+  var iv=setInterval(function(){
+    el.textContent+=text[i++];
+    scrollIt('pane-notes');
+    if(i>=text.length){clearInterval(iv);el.classList.remove('cur');T(80,cb);}
+  },16);
+}
+function showNotes(i, cb){
+  if(i>=NOTES.length){T(150,cb);return;}
+  var n=NOTES[i]; var row=Q(n.row);
+  if(row)row.classList.add('vis');
+  typeIn(n.val, n.t, function(){showNotes(i+1,cb);});
+}
+function showCodes(i,cb){
+  if(i>=CODES.length){T(150,cb);return;}
+  var e=Q(CODES[i]);if(e)e.classList.add('vis');
+  scrollIt('pane-notes');
+  T(180,function(){showCodes(i+1,cb);});
+}
+function showTpRows(i,cb){
+  if(i>=TPROWS.length){T(150,cb);return;}
+  var e=Q(TPROWS[i]);if(e)e.classList.add('vis');
+  scrollIt('pane-tp');
+  T(170,function(){showTpRows(i+1,cb);});
+}
+
+// ── ODONTOGRAM ────────────────────────────────────────
+function toothCat(n){var p=parseInt(n)%10;if(p===8)return'w';if(p>=6)return'mo';if(p>=4)return'pm';if(p===3)return'c';return'i';}
+function toothSVG(s,cat){
+  var co=SC[s]||SC.h;
+  var D={w:{w:14,ch:10,rh:9,rx:2.5},mo:{w:17,ch:11,rh:10,rx:3},pm:{w:12,ch:12,rh:10,rx:2.5},c:{w:10,ch:14,rh:11,rx:2},i:{w:11,ch:12,rh:10,rx:2}};
+  var d=D[cat]||D.mo;
+  var W=d.w,cH=d.ch,rH=d.rh,rx=d.rx,H=cH+rH,cx=W/2;
+  if(s==='m')return'<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'"><rect x="1" y="1" width="'+(W-2)+'" height="'+(cH-1)+'" rx="'+rx+'" fill="none" stroke="'+co.s+'" stroke-width=".9" stroke-dasharray="2,1.5" opacity=".5"/></svg>';
+  var root='<path d="M'+(cx-1.5)+' '+cH+' L'+(cx-2)+' '+H+' L'+cx+' '+(H-1)+' L'+(cx+2)+' '+H+' L'+(cx+1.5)+' '+cH+'" fill="'+co.r+'" stroke="'+co.s+'" stroke-width=".7" opacity=".8"/>';
+  if(cat==='mo'||cat==='w')root='<path d="M'+(cx-4)+' '+cH+' L'+(cx-5)+' '+H+' L'+(cx-2)+' '+(H-2)+' L'+cx+' '+(cH+2)+'" fill="'+co.r+'" stroke="'+co.s+'" stroke-width=".7" opacity=".8"/><path d="M'+(cx-1)+' '+(cH+1)+' L'+cx+' '+(H-1)+' L'+(cx+1)+' '+(cH+1)+'" fill="'+co.r+'" stroke="'+co.s+'" stroke-width=".7" opacity=".8"/><path d="M'+(cx+4)+' '+cH+' L'+(cx+5)+' '+H+' L'+(cx+2)+' '+(H-2)+' L'+cx+' '+(cH+2)+'" fill="'+co.r+'" stroke="'+co.s+'" stroke-width=".7" opacity=".8"/>';
+  var nW=(W-2)*.7,nX=(W-nW)/2;
+  var crown='<path d="M'+nX+' '+(cH-1)+' L'+(nX-.5)+' '+(cH-2)+' Q1 '+rx+' '+rx+' 1 L'+(W-rx)+' 1 Q'+(W-1)+' '+rx+' '+(W-nX+.5)+' '+(cH-2)+' L'+(W-nX)+' '+(cH-1)+' Z" fill="'+co.c+'" stroke="'+co.s+'" stroke-width="1"/>';
+  var caries=s==='c'?'<ellipse cx="'+cx+'" cy="'+(cH*.5)+'" rx="'+(W*.18)+'" ry="'+(cH*.12)+'" fill="#8B2020" opacity=".42"/>':'';
+  var hl='<ellipse cx="'+cx+'" cy="'+(cH*.26)+'" rx="'+((W-4)*.26)+'" ry="'+(cH*.13)+'" fill="rgba(255,255,255,.3)"/>';
+  return'<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+root+crown+caries+hl+'</svg>';
+}
+var odoDone=false;
+function buildOdo(){
+  if(odoDone)return; odoDone=true;
+  function makeArc(teeth,isLower,containerId){
+    var cont=Q(containerId); if(!cont)return;
+    teeth.forEach(function(t){
+      var cat=toothCat(t.n);
+      var wrap=document.createElement('div');
+      wrap.className='tooth'+(isLower?' lower':'');
+      wrap.id='t-'+t.n;
+      var sd=document.createElement('div');
+      var svg=toothSVG(t.s,cat);
+      sd.innerHTML=isLower?'<div style="transform:scaleY(-1)">'+svg+'</div>':svg;
+      var num=document.createElement('div');
+      num.className='tooth-num'; num.textContent=t.n;
+      if(isLower){wrap.appendChild(num);wrap.appendChild(sd);}
+      else{wrap.appendChild(sd);wrap.appendChild(num);}
+      cont.appendChild(wrap);
+    });
+  }
+  makeArc(UPPER,false,'upper-arc');
+  makeArc(LOWER,true,'lower-arc');
+}
+function revealOdo(i,all,cb){
+  if(i>=all.length){T(200,cb);return;}
+  var e=Q('t-'+all[i].n);if(e)e.classList.add('vis');
+  T(40,function(){revealOdo(i+1,all,cb);});
+}
+function revealFindings(i,ids,cb){
+  if(i>=ids.length){T(200,cb);return;}
+  var e=Q(ids[i]);if(e)e.classList.add('vis');
+  T(240,function(){revealFindings(i+1,ids,cb);});
+}
+
+// ── PMS EXPORT ────────────────────────────────────────
+function runPmsExport(cb){
+  S('ph5');
+  T(350,function(){
+    var f=Q('pms-flow');if(f)f.classList.add('vis');
+    T(900,function(){
+      var n=Q('pms-tname');if(n)n.textContent='Burak Altan';
+      T(500,function(){
+        var tk=Q('pms-tick');if(tk)tk.classList.add('vis');
+        T(500,function(){
+          var tg=Q('pms-tags');if(tg)tg.classList.add('vis');
+          T(1500,cb);
+        });
+      });
+    });
+  });
+}
+
+// ── RESET ─────────────────────────────────────────────
+function resetAll(){
+  ['ph1','ph2','ph3','ph4','ph5'].forEach(H);
+  ['pane-proc','pane-notes','pane-odo','pane-tp'].forEach(H);
+  NOTES.forEach(function(n){
+    var r=Q(n.row),v=Q(n.val);
+    if(r)r.classList.remove('vis');
+    if(v){v.textContent='';v.classList.remove('cur');}
+  });
+  CODES.forEach(function(id){var e=Q(id);if(e)e.classList.remove('vis');});
+  var cs=Q('code-sec');if(cs)cs.classList.remove('vis');
+  var btn=Q('appbtn');
+  if(btn){btn.classList.remove('show','saved');btn.style.display='none';btn.textContent='✓ Notu Onayla ve Kaydet';}
+  setTab('tt-notlar');
+  var rd=Q('cdot');if(rd)rd.classList.remove('done');
+  var rl=Q('clbl');if(rl)rl.textContent='Kayıt Aktif';
+  var pf=Q('proc-fill');if(pf)pf.style.width='0%';
+  UPPER.concat(LOWER).forEach(function(t){var e=Q('t-'+t.n);if(e)e.classList.remove('vis');});
+  ['of1','of2','of3','of4','of5'].forEach(function(id){var e=Q(id);if(e)e.classList.remove('vis');});
+  TPROWS.forEach(function(id){var e=Q(id);if(e)e.classList.remove('vis');});
+  var tt=Q('tp-total');if(tt)tt.classList.remove('vis');
+  var pmf=Q('pms-flow');if(pmf)pmf.classList.remove('vis');
+  var pmt=Q('pms-tick');if(pmt)pmt.classList.remove('vis');
+  var pmg=Q('pms-tags');if(pmg)pmg.classList.remove('vis');
+  var pmn=Q('pms-tname');if(pmn)pmn.textContent='Güncelleniyor...';
+}
+
+// ── MAIN ANIMATION LOOP ───────────────────────────────
+function runAnim(){
+  resetAll();
+  buildOdo();
+  S('ph1');
+  T(1800,function(){
+    H('ph1'); S('ph2');
+    T(2200,function(){
+      H('ph2'); S('ph3'); S('pane-proc');
+      var p=0, fill=Q('proc-fill');
+      var iv=setInterval(function(){
+        p+=3; if(fill)fill.style.width=p+'%';
+        if(p>=100){
+          clearInterval(iv);
+          T(250,function(){
+            H('pane-proc');
+            setTab('tt-notlar');
+            var d=Q('cdot');if(d)d.classList.add('done');
+            var l=Q('clbl');if(l)l.textContent='Not Hazır';
+            S('pane-notes');
+            showNotes(0,function(){
+              var cs=Q('code-sec');if(cs)cs.classList.add('vis');
+              showCodes(0,function(){
+                T(280,function(){
+                  var btn=Q('appbtn');
+                  if(btn){btn.style.display='block';btn.classList.add('show');}
+                  T(700,function(){
+                    if(btn){btn.classList.add('saved');btn.textContent='✓ Kaydedildi — Hasta Dosyasına Eklendi';}
+                    T(900,function(){
+                      H('pane-notes'); setTab('tt-odo'); S('pane-odo');
+                      revealOdo(0,UPPER.concat(LOWER),function(){
+                        revealFindings(0,['of1','of2','of3','of4','of5'],function(){
+                          T(600,function(){
+                            H('pane-odo'); setTab('tt-tp'); S('pane-tp');
+                            showTpRows(0,function(){
+                              T(200,function(){
+                                var tt=Q('tp-total');if(tt)tt.classList.add('vis');
+                                T(1800,function(){
+                                  H('pane-tp');
+                                  runPmsExport(function(){
+                                    S('ph4');
+                                    T(2200,function(){
+                                      H('ph3');H('ph4');H('ph5');
+                                      T(400,runAnim);
+                                    });
+                                  });
+                                });
+                              });
+                            });
+                          });
+                        });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+      },36);
+    });
+  });
+}
+
+// ── PMS CARD ANIMATION ────────────────────────────────
+function runPms(){
+  var t1=Q('pt1'),t2=Q('pt2'),s1=Q('ps1'),s2=Q('ps2'),cap=Q('pms-cap');
+  function showDis(){
+    if(t1)t1.classList.add('act');if(t2)t2.classList.remove('ton');
+    if(s1)s1.classList.remove('off');if(s2)s2.classList.add('off');
+    if(cap)cap.textContent="DisPro'ya dokunmaz — Tandela ayrı sekmede çalışır";
+    ['tl1','tl2','tl3'].forEach(function(id){var e=Q(id);if(e)e.classList.remove('vis');});
+    T(3200,showTan);
+  }
+  function showTan(){
+    if(t1)t1.classList.remove('act');if(t2)t2.classList.add('ton');
+    if(s1)s1.classList.add('off');if(s2)s2.classList.remove('off');
+    if(cap)cap.textContent='Not oluşturuldu — siz sadece onaylarsınız';
+    ['tl1','tl2','tl3'].forEach(function(id,i){T(i*360,function(){var e=Q(id);if(e)e.classList.add('vis');});});
+    T(4200,showDis);
+  }
+  showTan();
+}
+
+// ── FLOW STEPS ────────────────────────────────────────
+function animFlow(){
+  ['fs1','fs2','fs3','fs4'].forEach(function(id,i){
+    T(200+i*130,function(){var e=Q(id);if(e)e.classList.add('vis');});
+  });
+}
+
+// ── MODAL OVERLAY CLOSE ───────────────────────────────
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){Q('modal').classList.remove('open');document.body.style.overflow='';}
+});
+Q('modal').addEventListener('click',function(e){
+  if(e.target===this){this.classList.remove('open');document.body.style.overflow='';}
+});
+</script>
+</body>
+</html>
